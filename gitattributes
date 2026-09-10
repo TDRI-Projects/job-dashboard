@@ -1,0 +1,5 @@
+# ห้าม git แปลงตัวขึ้นบรรทัดใหม่ (CRLF/LF) ในไฟล์ข้อมูล
+# ถ้าไม่ใส่ไฟล์นี้ ไฟล์ CSV อาจถูกแก้ไขโดยไม่ตั้งใจตอน commit บน Windows
+*.csv   -text
+*.gz    -text -diff
+*.html  text eol=lf
