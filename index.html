@@ -232,10 +232,10 @@ body.no-anim *{transition:none!important}
 .ms-opt b{flex:0 0 auto;font-family:"Space Mono",monospace;font-size:10.5px;color:var(--muted);font-weight:700}
 .ms-foot{display:flex;align-items:center;gap:6px;padding:7px 9px;border-top:1px solid var(--border);background:var(--surface2)}
 .ms-picked{flex:1;font-size:10.5px;color:var(--muted)}
-.two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;align-items:start}
+.two-col{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:20px;align-items:start}
 
 .bar-list{display:flex;flex-direction:column;gap:7px}
-.bar-row{display:grid;grid-template-columns:230px 1fr 110px;align-items:center;gap:9px;cursor:pointer;padding:3px 5px;border-radius:5px;transition:background .12s;position:relative}
+.bar-row{display:grid;grid-template-columns:230px minmax(0,1fr) 110px;align-items:center;gap:9px;cursor:pointer;padding:3px 5px;border-radius:5px;transition:background .12s;position:relative}
 .bar-row:hover{background:var(--surface2)}
 .bar-label{font-size:11.5px;color:var(--text);text-align:right;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bar-track{height:17px;background:var(--surface2);border-radius:3px;overflow:hidden;position:relative;display:flex}
@@ -275,7 +275,8 @@ body.no-anim *{transition:none!important}
 .donut-legend{display:flex;flex-direction:column;gap:6px;min-width:0}
 .donut-legend div{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text);white-space:nowrap}
 .donut-legend i{width:9px;height:9px;border-radius:2px;flex-shrink:0}
-.donut-legend b{font-family:"Space Mono",monospace;font-weight:400;color:var(--muted);font-size:10.5px;margin-left:auto;padding-left:10px}
+.donut-legend .dn-name{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.donut-legend b{font-family:"Space Mono",monospace;font-weight:400;color:var(--muted);font-size:10.5px;margin-left:auto;padding-left:10px;flex:0 0 auto}
 
 .c0{background:linear-gradient(90deg,#4fa9d6,#1b7da3)}
 .c1{background:linear-gradient(90deg,#a97fc9,#7d5a9e)}
@@ -303,7 +304,7 @@ body.no-anim *{transition:none!important}
 .qlegend{display:flex;gap:14px;font-size:11px;color:var(--text);margin-bottom:8px}
 .qlegend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 .home-rank{display:flex;flex-direction:column;gap:6px}
-.rank-row{display:grid;grid-template-columns:22px 1fr 72px;gap:8px;align-items:center;padding:4px 6px;border-radius:6px;cursor:pointer;transition:background .12s}
+.rank-row{display:grid;grid-template-columns:22px minmax(0,1fr) 72px;gap:8px;align-items:center;padding:4px 6px;border-radius:6px;cursor:pointer;transition:background .12s}
 .rank-row:hover{background:var(--surface2)}
 .rank-n{font-family:"Space Mono",monospace;font-size:10px;color:var(--muted);text-align:right}
 .rank-name{font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -741,16 +742,18 @@ body.light .hdr-logo{filter:brightness(.82) saturate(1.15)}
 @media(max-width:1100px){
   .kpi-row{grid-template-columns:1fr 1fr}
   .home-grid,.home-grid-3,.home-grid-2{grid-template-columns:1fr 1fr}
-  .two-col{grid-template-columns:1fr}
+  .two-col{grid-template-columns:minmax(0,1fr)}
 }
 @media(max-width:820px){
   .nav{grid-template-columns:repeat(7,minmax(96px,1fr));overflow-x:auto}
   .nav-tab .th{display:none}
   .main,.custom{grid-template-columns:1fr}
-  .sidebar,.fields-panel{height:auto;position:static;max-height:46vh}
+  /* max-height ต้องมาคู่กับ overflow ไม่งั้นหัวคอลัมน์ (ค้นหา+ตัวกรอง) กินพื้นที่จนรายการเหลือไม่กี่พิกเซล
+     และล้นทับพาเนลด้านขวา */
+  .sidebar,.fields-panel{height:auto;position:static;max-height:60vh;overflow-y:auto;overflow-x:hidden}
   .home-grid,.home-grid-3,.home-grid-2{grid-template-columns:1fr}
   .kpi-row{grid-template-columns:1fr}
-  .bar-row{grid-template-columns:120px 1fr 80px}
+  .bar-row{grid-template-columns:120px minmax(0,1fr) 80px}
 }
 
 /* ══ เพิ่มเติมสำหรับเวอร์ชันข้อมูลจริง ══ */
@@ -845,6 +848,25 @@ table.heat td:first-child{white-space:nowrap}
 .trend-bare.framed{padding:12px 14px 13px;border:1px dashed color-mix(in srgb,var(--trend) 55%,transparent);border-radius:10px;background:color-mix(in srgb,var(--trend) 7%,transparent)}
 @media(max-width:1100px){.trend-bare .trend-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:820px){.trend-bare .trend-grid{grid-template-columns:1fr}}
+/* ── จอแคบ: คอลัมน์ป้าย/ตัวเลขของแถวกราฟถูกตรึงความกว้างไว้ (230px+110px) ทำให้หน้าเลื่อนออกด้านข้าง
+   ต้องใช้ !important เพราะบางแถวตั้ง grid-template-columns มาทาง inline style ── */
+@media(max-width:560px){
+  .bar-row{grid-template-columns:104px minmax(0,1fr) 68px!important;gap:6px}
+  .bar-label{font-size:10.5px}
+  .bar-val{font-size:9px}
+  .bar-val-pct{font-size:8.5px}
+  .rank-row{grid-template-columns:18px minmax(0,1fr) 58px}
+  .content{padding:12px}
+  .chart-section{padding:12px}
+  .two-col,.home-grid,.home-grid-2,.home-grid-3{grid-template-columns:minmax(0,1fr)}
+  /* โดนัท 150px + ป้ายกำกับที่ห้ามตัดบรรทัด ทำให้ชื่อภูมิภาคยาว ๆ ดันหน้าให้เลื่อนออกข้าง */
+  .donut-wrap{flex-direction:column;align-items:stretch;gap:12px}
+  .donut{align-self:center}
+  .donut-legend b{margin-left:auto}
+  .rank-val{font-size:9px}
+  .sk-row{grid-template-columns:minmax(0,1fr) 62px;gap:8px;padding-left:44px}
+  .sk-row>:nth-child(n+3){display:none}
+}
 
 </style>
 </head>
@@ -1193,7 +1215,12 @@ function buildDB(mainRaw, occRows, fosRows, skRows){
   // ไตรมาสที่มีทั้งสองปี (ใช้เทียบ YoY ให้ยุติธรรม)
   if(db.prevY){
     const cq = new Set(), pq = new Set();
-    for(let i = 0; i < db.N; i++){ (mainRaw.year[i] === db.curY.code ? cq : (mainRaw.year[i] === db.prevY.code ? pq : cq)).add(mainRaw.qtr[i]); }
+    /* ปีอื่นที่ไม่ใช่ปีล่าสุด/ปีก่อนหน้า ต้องไม่ถูกนับเข้า cq ไม่งั้น mask เทียบ YoY จะกว้างเกินจริง */
+    for(let i = 0; i < db.N; i++){
+      const y = mainRaw.year[i];
+      if(y === db.curY.code) cq.add(mainRaw.qtr[i]);
+      else if(y === db.prevY.code) pq.add(mainRaw.qtr[i]);
+    }
     db.commonQ = [...cq].filter(q => pq.has(q)).sort((a, b) => a - b);
   } else db.commonQ = db.quarters.slice();
   db.qMask = new Uint8Array(16); db.commonQ.forEach(q => db.qMask[q] = 1);
@@ -1365,7 +1392,7 @@ function tooltipHTML(name, total, expArr){
 function stackedBars(items, parentTotal, jump, limit = 12, labelW){
   if(!items.length) return '<div class="qb-empty" style="padding:14px 4px">ไม่มีข้อมูล</div>';
   const max = items[0].c || 1;
-  return `<div class="bar-list">${items.map((it, i) => `<div class="bar-row${i >= limit ? ' extra' : ''}" style="${labelW ? `grid-template-columns:${labelW}px 1fr 110px;` : ''}${i >= limit ? 'display:none' : ''}"${jump ? ` data-jump="${jump}" data-key="${esc(it.key)}"` : ''}>
+  return `<div class="bar-list">${items.map((it, i) => `<div class="bar-row${i >= limit ? ' extra' : ''}" style="${labelW ? `grid-template-columns:${labelW}px minmax(0,1fr) 110px;` : ''}${i >= limit ? 'display:none' : ''}"${jump ? ` data-jump="${jump}" data-key="${esc(it.key)}"` : ''}>
     <div class="bar-label" title="${esc(it.name)}">${esc(it.name)}</div>
     <div class="bar-track">${EXPS.map(e => { const c = it.exp ? (it.exp[e.code] || 0) : 0; return c ? `<div class="stacked-seg" style="width:${(c / max * 100).toFixed(2)}%;background:${EXP_COLORS[e.name] || 'var(--neutral-line)'}"></div>` : ''; }).join('')}</div>
     <div class="bar-val">${fmt(it.c)}<span class="bar-val-pct">${pct(it.c, parentTotal)}</span></div>
@@ -1375,7 +1402,7 @@ function stackedBars(items, parentTotal, jump, limit = 12, labelW){
 function simpleBars(items, parentTotal, cls, jump, limit = 12, labelW, valFn){
   if(!items.length) return '<div class="qb-empty" style="padding:14px 4px">ไม่มีข้อมูล</div>';
   const max = items[0].c || 1;
-  return `<div class="bar-list">${items.map((it, i) => `<div class="bar-row${i >= limit ? ' extra' : ''}" style="${labelW ? `grid-template-columns:${labelW}px 1fr 110px;` : ''}${i >= limit ? 'display:none' : ''}"${jump ? ` data-jump="${jump}" data-key="${esc(it.key)}"` : ''}>
+  return `<div class="bar-list">${items.map((it, i) => `<div class="bar-row${i >= limit ? ' extra' : ''}" style="${labelW ? `grid-template-columns:${labelW}px minmax(0,1fr) 110px;` : ''}${i >= limit ? 'display:none' : ''}"${jump ? ` data-jump="${jump}" data-key="${esc(it.key)}"` : ''}>
     <div class="bar-label" title="${esc(it.name)}">${esc(it.name)}</div>
     <div class="bar-track"><div class="bar-fill ${cls || 'c0'}" style="width:${(it.c / max * 100).toFixed(2)}%"></div></div>
     <div class="bar-val">${valFn ? valFn(it) : fmt(it.c) + `<span class="bar-val-pct">${pct(it.c, parentTotal)}</span>`}</div></div>`).join('')}</div>
@@ -1420,7 +1447,7 @@ function donut(items, total){
   let acc = 0;
   const stops = segs.map(s => { const a = acc; acc += s.c / total * 100; return `${s.color} ${a.toFixed(2)}% ${acc.toFixed(2)}%`; }).join(',');
   return `<div class="donut-wrap"><div class="donut" style="background:conic-gradient(${stops})"><div class="donut-center"><b>${pct(top[0].c, total, 0)}</b><span>${esc(top[0].name)}</span></div></div>
-  <div class="donut-legend">${segs.map(s => `<div><i style="background:${s.color}"></i>${esc(s.name)}<b>${pct(s.c, total)}</b></div>`).join('')}</div></div>`;
+  <div class="donut-legend">${segs.map(s => `<div><i style="background:${s.color}"></i><span class="dn-name">${esc(s.name)}</span><b>${pct(s.c, total)}</b></div>`).join('')}</div></div>`;
 }
 /* กราฟแท่งเทียบช่วงเวลา (ปี × ไตรมาส) */
 function periodChart(byYQ, height){
@@ -1437,7 +1464,10 @@ function periodChart(byYQ, height){
   return legend + `<div class="qchart"${height ? ` style="height:${height}px"` : ''}>${groups}</div>`;
 }
 function yoyBadge(cur, prev){
-  if(!prev) return '<span class="list-item-yoy" style="color:var(--muted)">—</span>';
+  /* ไม่มีฐานปีก่อน: ถ้าปีนี้มีจำนวนพอสมควรให้บอกว่า "ใหม่" ไม่ใช่ขีดเปล่า ๆ ที่ดูเหมือนไม่มีข้อมูล */
+  if(!prev) return cur >= YOY_MIN_NEW
+    ? '<div class="list-item-yoy yoy-pos" title="ปีก่อนไม่มีประกาศ">▲ ใหม่</div>'
+    : '<span class="list-item-yoy" style="color:var(--muted)">—</span>';
   const y = (cur - prev) / prev * 100;
   return `<div class="list-item-yoy ${y >= 0 ? 'yoy-pos' : 'yoy-neg'}">${y >= 0 ? '▲' : '▼'} ${Math.abs(y).toFixed(1)}%</div>`;
 }
@@ -1590,7 +1620,24 @@ async function loadAll(sources){
   const mainSize = mainSrc.kind === 'res'
     ? (mainSrc.gz ? (MAIN_RAW_BYTES || mainSrc.size * 5) : mainSrc.size)
     : mainSrc.file.size;
-  const cacheKey = `v3|${mainSize}|${occRows.length}|${fosRows.length}|${skRows.length}`;
+  /* แคชเก็บ "ตำแหน่งแถว" ของตารางอ้างอิงเอาไว้ (ไม่ใช่ id) ถ้าไฟล์อ้างอิงถูกเรียงลำดับใหม่
+     โดยที่จำนวนแถวเท่าเดิม ชื่ออาชีพ/สาขา/ทักษะทั้งหมดจะเพี้ยนแบบเงียบ ๆ
+     → ผูก key กับ "เนื้อหา" ของคอลัมน์ id ตามลำดับไฟล์ ไม่ใช่แค่จำนวนแถว */
+  const hashIds = (rows, col) => {
+    let h = 2166136261;
+    for(const r of rows){
+      const s = String(r[col]);
+      for(let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+      h = Math.imul(h ^ 59, 16777619);                       /* คั่นระหว่างแถว */
+    }
+    return (h >>> 0).toString(36);
+  };
+  /* main.csv: ใช้ขนาด + last-modified เพราะอ่านทั้งไฟล์มา hash จะทำให้แคชไร้ความหมาย */
+  const mainStamp = mainSrc.kind === 'res'
+    ? (mainSrc.res.headers.get('last-modified') || '')
+    : String(mainSrc.file.lastModified || '');
+  const cacheKey = `v4|${mainSize}|${mainStamp}|${occRows.length}.${hashIds(occRows, 'occupation_id')}`
+    + `|${fosRows.length}.${hashIds(fosRows, 'field_of_study_id')}|${skRows.length}.${hashIds(skRows, 'skill_id')}`;
 
   let raw = await idbGet(cacheKey);
   if(raw && raw.n){
@@ -1725,6 +1772,24 @@ function summarize(P, sel){
   S.skSub  = mkItems(P.sub, DB.skSub.names, null, null, DB.skSub.names.length);
   S.fosGrp = mkItems(P.fosG, DB.fosGrp.names, null, null, 20);
   S.occFam = mkItems(P.occFam, DB.occFam.names, null, null, 30);
+  /* รายการเต็ม (ไม่ตัด top-N) สำหรับตัวกรอง "ดูเฉพาะ" — ไม่เก็บ exp จึงเบามาก
+     เดิมช่องจังหวัดเห็นแค่ 30 จาก 78 และช่องสาขาวิชาเห็นแค่ 60 ทำให้ค่าที่เหลือเลือกไม่ได้เลย
+     แม้แต่ผ่านช่องค้นหาในป๊อปอัป */
+  const mkAll = (arr, names) => {
+    const out = [];
+    for(let i = 0; i < arr.length; i++) if(arr[i] > 0) out.push({ i, name: names[i], c: arr[i] });
+    out.sort((a, b) => b.c - a.c);
+    return out;
+  };
+  S.all = {
+    occ:    mkAll(P.occ, DB.occ.name),
+    occFam: mkAll(P.occFam, DB.occFam.names),
+    fos:    mkAll(P.fos, DB.fos.name),
+    fosGrp: mkAll(P.fosG, DB.fosGrp.names),
+    tsic:   mkAll(P.tsic, DB.dim.tsic),
+    reg:    mkAll(P.reg, DB.dim.reg),
+    prov:   mkAll(P.prov, DB.dim.prov)
+  };
   // ทักษะ: เก็บ 400 อันดับแรก พร้อมค่ารายปีสำหรับคำนวณการเติบโต
   const si = []; for(let i = 0; i < P.skill.length; i++) if(P.skill[i] > 0) si.push(i);
   si.sort((a, b) => P.skill[b] - P.skill[a]);
@@ -2032,7 +2097,13 @@ function resetShownList(type){
   const c = document.querySelector('#sb-' + type + ' .list-container');
   if(c) c.scrollTop = 0;
 }
-function growthOf(e){ return e.prev ? (e.cur - e.prev) / e.prev : (e.cur ? 99 : -99); }
+/* prev = 0 คือ "ของใหม่ล้วน" อัตราโตเป็นอนันต์ — แต่ถ้าฐานเล็กมาก (1-2 ประกาศ) ไม่ใช่สัญญาณ
+   เดิมรายการพวกนี้ถูกดันขึ้นหัวรายการ "YoY ↓" ทั้งที่ช่อง YoY แสดง "—" (ตัวเลขที่ใช้เรียงกับที่แสดงไม่ตรงกัน) */
+const YOY_MIN_NEW = 10;
+function growthOf(e){
+  if(e.prev) return (e.cur - e.prev) / e.prev;
+  return e.cur >= YOY_MIN_NEW ? 99 : -99;
+}
 let searchTimer;
 function onSearch(type, v){
   const k = skeyOf(type);
@@ -2132,7 +2203,14 @@ const TREND_MIN_PREV = 5, TREND_MIN_CUR = 3;
 function trendingHTML(S, ofLabel, bare, jump, unit){
   const id = 'trend-' + (++trendSeq);
   TREND_REG.set(id, { S, ofLabel, bare, jump, unit });
-  if(TREND_REG.size > 20) TREND_REG.delete(TREND_REG.keys().next().value);
+  /* หน้าอื่นถูก "ซ่อน" ไม่ได้ถูกลบ — ถ้าทิ้ง entry ที่ DOM ยังอยู่ ปุ่ม จำนวน/% ของหน้านั้นจะพัง
+     จึงทิ้งเฉพาะ entry ที่ไม่มี DOM แล้วและไม่ใช่ของที่เพิ่งสร้างในรอบ render นี้ */
+  if(TREND_REG.size > 24){
+    for(const k of [...TREND_REG.keys()]){
+      if(TREND_REG.size <= 24) break;
+      if(trendSeq - (+k.slice(6)) > 8 && !document.getElementById(k)) TREND_REG.delete(k);
+    }
+  }
   return trendStripHTML(id);
 }
 function trendStripHTML(id){
@@ -2152,7 +2230,7 @@ function trendStripHTML(id){
   const cards = list.map((t, i) => `<div class="trend-card${i >= TREND_SHOW ? ' extra-trend' : ''}"${i >= TREND_SHOW ? ' style="display:none"' : ''} data-jump="${jump}" data-key="${t.key}">
       <div class="trend-top"><div class="trend-name" title="${esc(t.name)}">${esc(t.name)}</div>
         <div class="trend-growth">▲ ${byCount ? '+' + fmt(t.delta) : signed(t.growth)}</div></div>
-      <div class="trend-sub"><b>${fmt(t.cur)}</b> ประกาศ · จาก ${fmt(t.prev)} · ${byCount ? signed(t.growth) : '+' + fmt(t.delta) + ' ประกาศ'} · <b>${t.now.toFixed(1)}%</b> ของประกาศ (จาก ${t.before.toFixed(1)}%)</div>
+      <div class="trend-sub"><b>${fmt(t.cur)}</b> ประกาศ · จาก ${fmt(t.prev)} · ${byCount ? signed(t.growth) + ' ของสัดส่วน' : '+' + fmt(t.delta) + ' ประกาศ'} · <b>${t.now.toFixed(1)}%</b> ของประกาศ (จาก ${t.before.toFixed(1)}%)</div>
     </div>`).join('');
   const left = list.length - TREND_SHOW;
   return `<div class="${bare === 'framed' ? 'trend-bare framed' : bare ? 'trend-bare' : 'trend-strip'}" id="${id}">${head}
@@ -2166,6 +2244,7 @@ function setTrendMode(id, m){
   const tmp = document.createElement('div');
   tmp.innerHTML = trendStripHTML(id);
   const fresh = tmp.firstElementChild;
+  if(!fresh) return;                              /* entry ถูกทิ้งไปแล้ว — อย่าแทนที่ด้วย null */
   el.replaceWith(fresh);
   wireContent(fresh);
 }
@@ -2313,7 +2392,9 @@ function dimSection(S, kind, E){
   }
   if(kind === 'geo'){
     const provs = S.prov.filter(x => x.name !== 'ไม่ระบุ').slice(0, 12);
-    return sectionWrap('📍 Region & Province · พื้นที่ทำงาน', `${S.reg.length} ภูมิภาค · ${S.prov.length} จังหวัดที่พบ · สัดส่วนจากประกาศทั้งหมดของรายการนี้`,
+    /* ต้องใช้ .distinct (จำนวนจริง) ไม่ใช่ .length ที่ถูกตัดเหลือ 30 อันดับแรกไว้วาดกราฟ */
+    const nProv = S.prov.distinct || S.prov.length, nReg = S.reg.distinct || S.reg.length;
+    return sectionWrap('📍 Region & Province · พื้นที่ทำงาน', `${nReg} ภูมิภาค · ${nProv} จังหวัดที่พบ${nProv > S.prov.length ? ` (แสดง ${S.prov.length} อันดับแรก)` : ''} · สัดส่วนจากประกาศทั้งหมดของรายการนี้`,
       `<div class="two-col"><div>${sectionSub('จังหวัด (ไม่รวม “ไม่ระบุ”)', simpleBars(provs, S.n, 'c2', null, 12, 190))}</div><div>${donut(S.reg, S.n)}</div></div>`);
   }
   if(kind === 'cooccur'){
@@ -2325,16 +2406,19 @@ function dimSection(S, kind, E){
 function sectionSub(title, body){ return `<div class="sub-block"><div class="sub-title">${esc(title)}</div>${body}</div>`; }
 
 /* ---- FOCUS FILTER · เลือกดูข้อมูลเฉพาะบางกลุ่ม ---- */
+/* รายการตัวเลือกเต็มของมิติหนึ่ง (ถอยไปใช้ top-N เดิมถ้าเป็น profile รุ่นเก่าที่ไม่มี S.all) */
+const fullOpts = (S, k) => ((S.all && S.all[k]) || S[k] || []).map(x => ({ v: x.i, name: x.name, c: x.c }));
 const FOCUS_DIMS = {
   exp:  { label: 'ประสบการณ์',    all: 'ทุกประสบการณ์',     nameOf: c => DB.dim.exp[c],  opts: S => EXPS.map(e => ({ v: e.code, name: e.name, c: S.exp[e.code] })) },
   deg:  { label: 'ระดับการศึกษา', all: 'ทุกระดับการศึกษา',  nameOf: c => DB.dim.deg[c],  opts: S => DEGS.map(d => ({ v: d.code, name: d.name, c: S.deg[d.code] })) },
-  occ:  { label: 'ตำแหน่งงาน',    all: 'ทุกตำแหน่งงาน',     nameOf: c => DB.occ.name[c], opts: S => S.occ.map(x => ({ v: x.i, name: x.name, c: x.c })) },
-  occFam: { label: 'กลุ่มอาชีพ',   all: 'ทุกกลุ่มอาชีพ',    nameOf: c => DB.occFam.names[c], opts: S => S.occFam.map(x => ({ v: x.i, name: x.name, c: x.c })) },
-  fos:  { label: 'สาขาวิชา',      all: 'ทุกสาขาวิชา',       nameOf: c => DB.fos.name[c], opts: S => S.fos.map(x => ({ v: x.i, name: x.name, c: x.c })) },
-  fosGrp: { label: 'กลุ่มสาขาวิชา', all: 'ทุกกลุ่มสาขาวิชา', nameOf: c => DB.fosGrp.names[c], opts: S => S.fosGrp.map(x => ({ v: x.i, name: x.name, c: x.c })) },
-  tsic: { label: 'อุตสาหกรรม',    all: 'ทุกอุตสาหกรรม',     nameOf: c => DB.dim.tsic[c], opts: S => S.tsic.map(x => ({ v: x.i, name: x.name, c: x.c })) },
-  reg:  { label: 'ภูมิภาค',       all: 'ทุกภูมิภาค',        nameOf: c => DB.dim.reg[c],  opts: S => S.reg.map(x => ({ v: x.i, name: x.name, c: x.c })) },
-  prov: { label: 'จังหวัด',       all: 'ทุกจังหวัด',        nameOf: c => DB.dim.prov[c], opts: S => S.prov.map(x => ({ v: x.i, name: x.name, c: x.c })) }
+  /* opts ต้องอ่านจาก S.all (รายการเต็ม) ไม่ใช่ S.<dim> ที่ถูกตัดเหลือ top-N ไว้สำหรับวาดกราฟ */
+  occ:  { label: 'ตำแหน่งงาน',    all: 'ทุกตำแหน่งงาน',     nameOf: c => DB.occ.name[c], opts: S => fullOpts(S, 'occ') },
+  occFam: { label: 'กลุ่มอาชีพ',   all: 'ทุกกลุ่มอาชีพ',    nameOf: c => DB.occFam.names[c], opts: S => fullOpts(S, 'occFam') },
+  fos:  { label: 'สาขาวิชา',      all: 'ทุกสาขาวิชา',       nameOf: c => DB.fos.name[c], opts: S => fullOpts(S, 'fos') },
+  fosGrp: { label: 'กลุ่มสาขาวิชา', all: 'ทุกกลุ่มสาขาวิชา', nameOf: c => DB.fosGrp.names[c], opts: S => fullOpts(S, 'fosGrp') },
+  tsic: { label: 'อุตสาหกรรม',    all: 'ทุกอุตสาหกรรม',     nameOf: c => DB.dim.tsic[c], opts: S => fullOpts(S, 'tsic') },
+  reg:  { label: 'ภูมิภาค',       all: 'ทุกภูมิภาค',        nameOf: c => DB.dim.reg[c],  opts: S => fullOpts(S, 'reg') },
+  prov: { label: 'จังหวัด',       all: 'ทุกจังหวัด',        nameOf: c => DB.dim.prov[c], opts: S => fullOpts(S, 'prov') }
 };
 /* section ไหนอยู่บนหน้า → กรองด้วยมิติไหนได้ */
 const SECTION_DIMS = { occupation: ['occ', 'occFam'], fos: ['fos', 'fosGrp'], industry: ['tsic'], geo: ['reg', 'prov'] };
@@ -3115,7 +3199,7 @@ function topicGroupIndustry(field){
   ])}
   ${sectionWrap(`🏭 ${label}`, `จำนวนประกาศทั้งหมด · ตัวเลขขวา = YoY (${QLABEL})`,
     `<div class="bar-list">${groups.map(g => { const gy = g.prev ? (g.cur - g.prev) / g.prev * 100 : null;
-      return `<div class="bar-row" style="grid-template-columns:250px 1fr 130px" data-jump="industry-${field}" data-key="${g.i}"><div class="bar-label" title="${esc(g.name)}">${esc(g.name)}</div>
+      return `<div class="bar-row" style="grid-template-columns:250px minmax(0,1fr) 130px" data-jump="industry-${field}" data-key="${g.i}"><div class="bar-label" title="${esc(g.name)}">${esc(g.name)}</div>
       <div class="bar-track"><div class="bar-fill c0" style="width:${(g.c / mx * 100).toFixed(1)}%"></div></div>
       <div class="bar-val">${fmt(g.c)}<span class="bar-val-pct" style="color:${gy === null ? 'var(--muted)' : gy >= 0 ? 'var(--up)' : 'var(--down)'}">${gy === null ? '—' : (gy >= 0 ? '▲ ' : '▼ ') + signed(gy)}</span></div></div>`; }).join('')}</div>`)}
   <div class="home-grid-2">
@@ -3127,7 +3211,7 @@ function topicGroupIndustry(field){
     ${sectionWrap('⏱️ ประสบการณ์', 'สัดส่วนจากประกาศในกลุ่มนี้', expBlock(S.exp, S.n, 'exp-pills exp-home'))}
     ${sectionWrap('📍 พื้นที่', 'สัดส่วนตามภูมิภาค', donut(S.reg, S.n))}
   </div>
-  ${sectionWrap('🎓 สาขาวิชาที่รับ', `${S.fos.length} สาขา · คลิกเพื่อดูโปรไฟล์`, simpleBars(S.fos.slice(0, 15), S.n, 'c2', 'field', 15, 250))}`;
+  ${sectionWrap('🎓 สาขาวิชาที่รับ', `${fmt(S.fos.distinct || S.fos.length)} สาขา · แสดง 15 อันดับแรก · คลิกเพื่อดูโปรไฟล์`, simpleBars(S.fos.slice(0, 15), S.n, 'c2', 'field', 15, 250))}`;
 }
 
 function topicSkillFlag(flagKey){
@@ -3735,7 +3819,16 @@ function sqlCompile(Q){
   if(!outCols.length) throw new SqlError('SELECT ว่างเปล่า', 0);
 
   const whereF = Q.where ? comp(Q.where, false) : null;
-  const groupF = Q.groupBy.map(g => comp(g, false));
+  /* GROUP BY 1, 2 — อ้างลำดับคอลัมน์ใน SELECT เหมือนที่ ORDER BY รองรับอยู่แล้ว
+     (เดิมตัวเลขถูกคอมไพล์เป็นค่าคงที่ ทำให้ทุกแถวยุบเหลือกลุ่มเดียวโดยไม่แจ้งเตือน) */
+  const groupF = Q.groupBy.map(g => {
+    if(g.t === 'num'){
+      const i = Math.trunc(g.v) - 1;
+      if(i < 0 || i >= outCols.length) throw new SqlError(`GROUP BY ${g.v} เกินจำนวนคอลัมน์ที่ SELECT`, 0);
+      return outCols[i].f;
+    }
+    return comp(g, false);
+  });
   const havingF = Q.having ? comp(Q.having, false) : null;
   used.forEach(r => { if(r.join && r.join.on) r.onF = comp(r.join.on, false); });
 
@@ -3847,6 +3940,9 @@ function sqlExec(src, onProgress){
   let scanned = 0, emitted = 0, capped = false, stop = false;
   const needOrder = P.orderF.length > 0;
   const nOut = P.outCols.length;
+  /* SELECT DISTINCT: ต้องตัดซ้ำ "ระหว่าง" สแกน ไม่ใช่ตอนจบ — ไม่งั้นเพดาน 20,000 แถว
+     จะตัดข้อมูลทิ้งไปก่อนที่จะได้ตัดซ้ำ (เช่น DISTINCT year เห็นแค่ปีแรกปีเดียว) */
+  const distSeen = (P.Q.distinct && !P.grouped) ? new Set() : null;
   const wantK = P.Q.limit !== null ? Math.min(SQL_LIMITS.rows, P.Q.limit + P.Q.offset) : SQL_LIMITS.rows;
   const flushAt = Math.max(2000, wantK * 4);
 
@@ -3870,7 +3966,12 @@ function sqlExec(src, onProgress){
       if(!needOrder){
         const r = new Array(nOut);
         for(let c = 0; c < nOut; c++) r[c] = P.outCols[c].f(st, null);
-        if(P.Q.distinct){ if(plain.length >= SQL_LIMITS.rows){ capped = true; stop = true; return; } plain.push({ r }); return; }
+        if(distSeen){
+          const dk = r.join(SQL_SEP);
+          if(distSeen.has(dk)) return;
+          if(distSeen.size >= SQL_LIMITS.rows){ capped = true; stop = true; return; }
+          distSeen.add(dk); plain.push({ r }); return;
+        }
         plain.push({ r });
         if(plain.length >= wantK){ stop = true; if(P.Q.limit === null) capped = true; }
         return;
@@ -3878,9 +3979,19 @@ function sqlExec(src, onProgress){
       /* มี ORDER BY: เก็บเฉพาะค่าที่ใช้เรียง + ตำแหน่งแถว แล้วค่อยอ่านค่าจริงเฉพาะแถวที่รอด */
       const keys = new Array(P.orderF.length);
       for(let i = 0; i < P.orderF.length; i++){ const o = P.orderF[i]; keys[i] = o.f ? o.f(st, null) : P.outCols[o.idx].f(st, null); }
+      if(distSeen){
+        /* DISTINCT + ORDER BY: ต้องอ่านค่าจริงทันทีเพื่อตัดซ้ำ ไม่งั้น trim() จะตัดตาม LIMIT
+           ก่อนตัดซ้ำ แล้วผลลัพธ์จะเหลือแถวเดียว */
+        const r = new Array(nOut);
+        for(let c = 0; c < nOut; c++) r[c] = P.outCols[c].f(st, null);
+        const dk = r.join(SQL_SEP);
+        if(distSeen.has(dk)) return;
+        if(distSeen.size >= SQL_LIMITS.rows){ capped = true; stop = true; return; }
+        distSeen.add(dk); plain.push({ keys, r });
+        return;
+      }
       plain.push({ keys, stt: { i: st.i, oc: st.oc, f: st.f, s: st.s, ord: st.ord } });
-      if(!P.Q.distinct && plain.length >= flushAt) trim();
-      else if(P.Q.distinct && plain.length >= SQL_LIMITS.rows){ capped = true; stop = true; }
+      if(plain.length >= flushAt) trim();
       return;
     }
     let G;
@@ -4034,7 +4145,8 @@ function sqlExec(src, onProgress){
    ═══════════════════════════════════════════════════════════════ */
 const QDEF = [
   { id: 'year', label: 'ปี', col: 'year', tbl: 'main' },
-  { id: 'quarter', label: 'ไตรมาส', col: 'quarter', tbl: 'main' },
+  /* ไตรมาสแสดงเป็น "Q3" แต่ค่าจริงในคอลัมน์เป็นตัวเลข 3 — ตอนสร้าง WHERE ต้องใช้ code ไม่ใช่ป้าย */
+  { id: 'quarter', label: 'ไตรมาส', col: 'quarter', tbl: 'main', litFrom: 'code' },
   { id: 'region', label: 'ภูมิภาค', col: 'region', tbl: 'main' },
   { id: 'province', label: 'จังหวัด', col: 'province', tbl: 'main' },
   { id: 'min_degree', label: 'วุฒิขั้นต่ำ', col: 'min_degree', tbl: 'main' },
@@ -4042,8 +4154,9 @@ const QDEF = [
   { id: 'tsic_group', label: 'อุตสาหกรรม TSIC', col: 'tsic_group', tbl: 'main' },
   { id: 'scurve_group', label: 'S-Curve', col: 'scurve_group', tbl: 'main' },
   { id: 'bcg_group', label: 'BCG', col: 'bcg_group', tbl: 'main' },
-  { id: 'occupation', label: 'ตำแหน่งงาน', col: 'occupation_title', tbl: 'occupation' },
-  { id: 'occupation_family', label: 'กลุ่มอาชีพ', col: 'occupation_family', tbl: 'occupation' },
+  /* ประกาศที่ไม่มี occupation_id จะได้ NULL หลัง LEFT JOIN — ป้าย "(ไม่ระบุ)" จึงต้องแปลงเป็น IS NULL */
+  { id: 'occupation', label: 'ตำแหน่งงาน', col: 'occupation_title', tbl: 'occupation', nullable: true },
+  { id: 'occupation_family', label: 'กลุ่มอาชีพ', col: 'occupation_family', tbl: 'occupation', nullable: true },
   { id: 'field_of_study', label: 'สาขาวิชา', col: 'field_of_study_name', tbl: 'field_of_study' },
   { id: 'field_of_study_group', label: 'กลุ่มสาขาวิชา', col: 'field_of_study_group', tbl: 'field_of_study' },
   { id: 'skill', label: 'ทักษะ', col: 'skill_name', tbl: 'skill' },
@@ -4063,8 +4176,16 @@ const MEASURES = [
   { id: 'n_occ',     label: 'ตำแหน่งงานไม่ซ้ำ',       head: 'distinct_occupations', need: 'occupation',     sql: () => `COUNT(DISTINCT occupation_title) AS distinct_occupations` },
   { id: 'n_fos',     label: 'สาขาวิชาไม่ซ้ำ',         head: 'distinct_fields',     need: 'field_of_study', sql: () => `COUNT(DISTINCT field_of_study_name) AS distinct_fields` },
   { id: 'n_skill',   label: 'ทักษะไม่ซ้ำ',            head: 'distinct_skills',     need: 'skill',          sql: () => `COUNT(DISTINCT skill_name) AS distinct_skills` },
-  { id: 'avg_skill', label: 'ทักษะเฉลี่ย/ประกาศ',     head: 'avg_skills',          sql: () => `ROUND(AVG(n_skill), 2) AS avg_skills` },
-  { id: 'avg_fos',   label: 'สาขาเฉลี่ย/ประกาศ',      head: 'avg_fields',          sql: () => `ROUND(AVG(n_field_of_study), 2) AS avg_fields` }
+  /* ถ้ามี JOIN แบบ list ประกาศ 1 รายการจะกลายเป็นหลายแถว AVG() ตรง ๆ จึงถ่วงน้ำหนักประกาศที่มีทักษะเยอะเกินจริง
+     กรณี JOIN skill อย่างเดียว จำนวนแถว/จำนวนประกาศ = ทักษะเฉลี่ยต่อประกาศพอดี (เช่นเดียวกับ field_of_study) */
+  { id: 'avg_skill', label: 'ทักษะเฉลี่ย/ประกาศ',     head: 'avg_skills',          sql: (C, T) =>
+      (T && T.has('skill') && !T.has('field_of_study'))
+        ? `ROUND(1.0 * COUNT(*) / NULLIF(COUNT(DISTINCT row_id), 0), 2) AS avg_skills`
+        : `ROUND(AVG(n_skill), 2) AS avg_skills` },
+  { id: 'avg_fos',   label: 'สาขาเฉลี่ย/ประกาศ',      head: 'avg_fields',          sql: (C, T) =>
+      (T && T.has('field_of_study') && !T.has('skill'))
+        ? `ROUND(1.0 * COUNT(*) / NULLIF(COUNT(DISTINCT row_id), 0), 2) AS avg_fields`
+        : `ROUND(AVG(n_field_of_study), 2) AS avg_fields` }
 ];
 const measOf = id => MEASURES.find(m => m.id === id);
 
@@ -4132,15 +4253,28 @@ function buildSQL(){
         cur: `SUM(CASE WHEN year = ${cur} THEN 1 ELSE 0 END)`,
         prev: `SUM(CASE WHEN year = ${prev} THEN 1 ELSE 0 END)` };
   const dimCols = q.cols.map(c => defOf(c).col);
-  const meas = q.measures.map(m => measOf(m).sql(C));
+  const meas = q.measures.map(m => measOf(m).sql(C, T));
   const sel = [...dimCols, ...(meas.length ? meas : [`${C.cnt} AS postings`])].join(',\n       ');
   const joins = [];
   if(T.has('occupation')) joins.push('LEFT JOIN occupation     ON main.occupation_id     = occupation.occupation_id');
   if(T.has('field_of_study')) joins.push('LEFT JOIN field_of_study ON main.field_of_study_id = field_of_study.field_of_study_id');
   if(T.has('skill')) joins.push('LEFT JOIN skill          ON main.skill_id          = skill.skill_id');
-  const where = q.filters.length
-    ? '\nWHERE  ' + q.filters.map(f => `${defOf(f.f).col} ${f.op === 'nin' ? 'NOT IN' : 'IN'} (${f.labels.map(sqlLit).join(', ')})`).join('\n  AND  ')
-    : '';
+  /* ค่าที่ใส่ลง SQL ต้องเป็นค่าจริงในคอลัมน์ ไม่ใช่ป้ายที่แสดงบนหน้าจอ */
+  const NO_LABEL = '(ไม่ระบุ)';
+  const filterSQL = f => {
+    const d = defOf(f.f), not = f.op === 'nin';
+    const vals = d.litFrom === 'code'
+      ? f.codes.map(String)
+      : f.labels.filter((l, i) => !(d.nullable && l === NO_LABEL));
+    const wantNull = !!d.nullable && f.labels.includes(NO_LABEL);
+    const parts = [];
+    if(vals.length) parts.push(`${d.col} ${not ? 'NOT IN' : 'IN'} (${vals.map(sqlLit).join(', ')})`);
+    if(wantNull) parts.push(`${d.col} IS ${not ? 'NOT ' : ''}NULL`);
+    if(!parts.length) return null;
+    return parts.length === 1 ? parts[0] : `(${parts.join(not ? ' AND ' : ' OR ')})`;
+  };
+  const terms = q.filters.map(filterSQL).filter(Boolean);
+  const where = terms.length ? '\nWHERE  ' + terms.join('\n  AND  ') : '';
   const grp = dimCols.length ? '\nGROUP BY ' + dimCols.join(', ') : '';
   const having = (dimCols.length && q.minCount > 0) ? `\nHAVING ${C.cnt} >= ${q.minCount}` : '';
   const sortDim = defOf(q.sort.by), sortMeas = measOf(q.sort.by);
@@ -4182,7 +4316,7 @@ function schemaCard(t, active){
   return `<div class="er-card${active === t ? ' on' : ''}" role="button" tabindex="0" onclick="previewTable('${t}')" onkeydown="if(event.key==='Enter')previewTable('${t}')" title="คลิกเพื่อดูตัวอย่างข้อมูล 10 แถว">
     <div class="er-head"><span class="er-ico">${T.icon}</span><span class="er-name">${T.name}</span><span class="er-rows">${fmt(T.count())} แถว</span></div>
     <div class="er-file">${T.file} · ${esc(T.grain)}</div>
-    <div class="er-cols">${T.cols.filter(c => !c.synth).map(c => `<div class="er-col"><span class="er-cn">${c.name}</span><span class="er-ct">${c.type}</span>${
+    <div class="er-cols">${T.cols.filter(c => !c.synth).map(c => `<div class="er-col"><span class="er-cn">${esc(c.name)}</span><span class="er-ct">${esc(c.type)}</span>${
       c.pk ? '<span class="er-badge pk">PK</span>' : ''}${c.fk ? '<span class="er-badge fk">FK</span>' : ''}${c.list ? '<span class="er-badge list">LIST</span>' : ''}</div>`).join('')}</div>
     ${T.cols.some(c => c.synth) ? `<div class="er-synth">+ คอลัมน์ช่วย: ${T.cols.filter(c => c.synth).map(c => c.name).join(', ')} <span>(สร้างโดย dashboard ไม่ได้อยู่ในไฟล์)</span></div>` : ''}
     <div class="er-cta">ดูตัวอย่าง 10 แถว ›</div></div>`;
@@ -4460,14 +4594,38 @@ function exportCSV(){
    9. ผู้ช่วยตอบคำถาม (คำนวณจากข้อมูลจริง — rule based)
    ═══════════════════════════════════════════════════════════════ */
 let NAME_IDX = null;
+/* คำทั่วไปที่บังเอิญไปตรงกับชื่อทักษะ — กันไม่ให้คำถามธรรมดาถูกตีความเป็นชื่อทักษะ */
+const CHAT_STOPWORDS = new Set(['and','the','for','are','with','from','that','this','what','which','how','why',
+  'who','need','needs','want','more','than','most','best','top','about','tell','show','give','list','job','jobs',
+  'work','working','skill','skills','trending','trend','data','other','general','use','using','make','get']);
 function buildNameIndex(){
   if(NAME_IDX) return NAME_IDX;
   const sk = [], oc = [], fo = [];
-  for(let i = 0; i < DB.sk.name.length; i++) if(IDX.skill.all[i] > 40 && DB.sk.name[i].length >= 3) sk.push({ i, lc: DB.sk.name[i].toLowerCase() });
+  /* ชื่อทักษะในชุดข้อมูลมักมีวงเล็บกำกับต่อท้าย เช่น "Python (Programming Language)"
+     แต่ผู้ใช้พิมพ์แค่ "Python" — ถ้าเทียบเฉพาะชื่อเต็มจะไม่เจอเลย (รวมถึง SQL / Java / Tableau) */
+  for(let i = 0; i < DB.sk.name.length; i++){
+    if(IDX.skill.all[i] <= 40) continue;
+    const n = DB.sk.name[i];
+    if(n.length >= 3) sk.push({ i, lc: n.toLowerCase() });
+    const base = n.replace(/\s*\([^()]*\)\s*$/, '').trim();
+    if(base.length >= 3 && base.length < n.length) sk.push({ i, lc: base.toLowerCase() });
+  }
   for(let i = 0; i < DB.occ.name.length; i++) if(IDX.occ.all[i] > 0) oc.push({ i, lc: DB.occ.name[i].toLowerCase() });
   for(let i = 0; i < DB.fos.name.length; i++) if(IDX.fos.all[i] > 0) fo.push({ i, lc: DB.fos.name[i].toLowerCase() });
   sk.sort((a, b) => b.lc.length - a.lc.length); oc.sort((a, b) => b.lc.length - a.lc.length); fo.sort((a, b) => b.lc.length - a.lc.length);
-  NAME_IDX = { sk, oc, fo };
+  /* ดัชนีระดับ "คำ" ไว้ใช้เป็นทางเลือกสุดท้าย เมื่อผู้ใช้พิมพ์สั้นกว่าชื่อเต็ม
+     เช่น "Excel" → Microsoft Excel · "Photoshop" → Adobe Photoshop · "SAP" → SAP ERP
+     เก็บทักษะที่มีประกาศมากที่สุดของแต่ละคำ */
+  const word = new Map();
+  for(let i = 0; i < DB.sk.name.length; i++){
+    const c = IDX.skill.all[i]; if(c <= 40) continue;
+    for(const w of (DB.sk.name[i].toLowerCase().match(/[a-z][a-z0-9+#.]{2,}/g) || [])){
+      if(CHAT_STOPWORDS.has(w)) continue;
+      const prev = word.get(w);
+      if(prev === undefined || IDX.skill.all[prev] < c) word.set(w, i);
+    }
+  }
+  NAME_IDX = { sk, oc, fo, word };
   return NAME_IDX;
 }
 const SUGGEST = ['อาชีพไหนต้องการ Python มากที่สุด', 'อุตสาหกรรมไหนเติบโตสูงสุด', 'Data Analysts ต้องการวุฒิอะไร', 'ภูมิภาคไหนมีประกาศมากที่สุด', 'ทักษะไหนมาแรง'];
@@ -4506,12 +4664,13 @@ function botReply(t){
       `สาขาวิชาที่รับมากสุด: ${S.fos.slice(0, 3).map(s => esc(s.name)).join(', ') || '—'}`
     ])}เปิดหน้า Occupation เพื่อดูรายละเอียดเต็มได้ครับ`;
   }
-  if(hitSk){
-    const code = hitSk.i, S = getProfile({ kind: 'skill', id: code });
+  const skillAnswer = code => {
+    const S = getProfile({ kind: 'skill', id: code });
     const rows = S.occ.filter(o => IDX.occ.all[o.i] >= 200).map(o => ({ ...o, share: o.c / IDX.occ.all[o.i] * 100 })).sort((a, b) => b.share - a.share).slice(0, 5);
     const y = S.prev ? (S.cur - S.prev) / S.prev * 100 : null;
     return `ทักษะ <b>${esc(DB.sk.name[code])}</b> ถูกระบุใน <span class="n">${fmt(S.n)}</span> ประกาศ (${pct(S.n, GLOBAL.n)} ของตลาด${y === null ? '' : `, YoY <span class="n">${signed(y)}</span>`}) ตำแหน่งที่ต้องการมากที่สุดตามสัดส่วน:${li(rows.map(r => `<b>${esc(r.name)}</b> — <span class="n">${r.share.toFixed(1)}%</span> ของประกาศตำแหน่งนั้น (${fmt(r.c)} รายการ)`))}`;
-  }
+  };
+  if(hitSk) return skillAnswer(hitSk.i);
   if(hitFo){
     const S = getProfile({ kind: 'fos', id: hitFo.i });
     return `สาขา <b>${esc(DB.fos.name[hitFo.i])}</b> ปรากฏใน <span class="n">${fmt(S.n)}</span> ประกาศ · ตำแหน่งที่รับมากที่สุด:${li(S.occ.slice(0, 5).map(o => `<b>${esc(o.name)}</b> <span class="n">${fmt(o.c)}</span>`))}ทักษะที่ต้องการ: ${S.skills.slice(0, 6).map(s => esc(s.name)).join(', ')}`;
@@ -4536,6 +4695,13 @@ function botReply(t){
   }
   if(/ประสบการณ์|experience|จบใหม่/.test(lt)){
     return `ประสบการณ์ที่ประกาศงานต้องการ:${li(EXPS.map(e => [e.name, GSUM.exp[e.code]]).sort((a, b) => b[1] - a[1]).map(([n, c]) => `<b>${esc(n)}</b> <span class="n">${pct(c, GLOBAL.n)}</span> (${fmt(c)})`))}`;
+  }
+  /* ทางเลือกสุดท้ายก่อนตอบว่าไม่เข้าใจ — จับคำเดี่ยวที่ตรงกับชื่อทักษะยอดนิยม
+     (ผู้ใช้พิมพ์ "Excel" แต่ชื่อในข้อมูลคือ "Microsoft Excel") */
+  for(const w of (lt.match(/[a-z][a-z0-9+#.]{2,}/g) || [])){
+    if(CHAT_STOPWORDS.has(w)) continue;
+    const si = NI.word.get(w);
+    if(si !== undefined) return skillAnswer(si);
   }
   return `ผมไม่แน่ใจว่าคำถามนี้อ้างถึงข้อมูลส่วนไหนครับ · ภาพรวม: มีประกาศ <span class="n">${fmt(GLOBAL.n)}</span> รายการ ตำแหน่งที่ประกาศมากที่สุดคือ${li(GSUM.occ.slice(0, 3).map(o => `<b>${esc(o.name)}</b> <span class="n">${fmt(o.c)}</span>`))}ลองระบุชื่อทักษะ ตำแหน่งงาน หรือสาขาวิชาที่สนใจ หรือใช้แท็บ Custom เพื่อสร้างคำถามเองครับ`;
 }
