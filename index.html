@@ -33,7 +33,7 @@ body.light{
 body.light .chart-section,body.light .kpi,body.light .trend-card{box-shadow:0 1px 3px rgba(16,24,40,.05)}
 body.light .kpi-big,body.light .list-item-count,body.light .bar-val-pct,body.light .exp-pill-num{color:var(--accent)}
 body.light .kpi-big{color:var(--text)}
-body.light .tm-cell,body.light .sk-pill{text-shadow:0 1px 2px rgba(0,0,0,.35)}
+body.light .tm-cell{text-shadow:0 1px 2px rgba(0,0,0,.35)}
 body.light .f-chip.measure.active,body.light .qb-chip.measure{color:var(--measure);border-color:var(--measure)}
 body.light .qb-chip.filter,body.light .mock-badge,body.light .modal-tag,body.light .modal-warn,body.light .keymsg b,body.light .keymsg-lbl{color:var(--warn-text)}
 body.light .trend-title{color:var(--trend-soft)}body.light .trend-growth{color:var(--trend)}
@@ -327,24 +327,21 @@ body.no-anim *{transition:none!important}
 .donut-legend i{width:9px;height:9px;border-radius:4px;flex-shrink:0}
 .donut-legend .dn-name{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .donut-legend b{font-family:var(--font-mono);font-weight:400;color:var(--muted);font-size:12px;margin-left:auto;padding-left:10px;flex:0 0 auto}
-/* โดนัทภูมิภาค (หน้า Occupation–Skill) — ขยายให้เต็มช่องขวาข้างกราฟจังหวัด
-   container-type:size → ขนาดโดนัทคิดจากความสูง/กว้างจริงของช่อง (cqh/cqw) โดยไม่ดันความสูงแถว
-   เผื่อ 260px ให้ป้ายกำกับ (ชื่อยาวสุด "กรุงเทพมหานครและปริมณฑล") ถ้าแคบกว่านั้นชื่อจะถูกตัด … แทน */
-.two-col > .reg-donut{align-self:stretch;container-type:size;min-height:240px}
-.reg-donut .donut-wrap{height:100%;justify-content:center;gap:28px}
-.reg-donut .donut{--d:max(150px, min(100cqh, 100cqw - 260px));width:var(--d);height:var(--d)}
+/* โดนัทภูมิภาค (หน้า Occupation–Skill) — โดนัทอยู่บน ป้ายกำกับเรียงต่อด้านล่าง ชิดบนของช่องขวา
+   container-type:inline-size → ขนาดโดนัทคิดจากความกว้างจริงของช่อง (cqw) · ป้ายกว้างไม่เกิน 360px ให้ชื่อกับ % ไม่ห่างกันเกินไป */
+.two-col > .reg-donut{container-type:inline-size}
+.reg-donut .donut-wrap{flex-direction:column;align-items:center;gap:20px}
+.reg-donut .donut{--d:clamp(170px, 84cqw, 330px);width:var(--d);height:var(--d)}
 .reg-donut .donut::before{inset:17%}
 .reg-donut .donut-center b{font-size:calc(var(--d) * .11)}
 .reg-donut .donut-center span{display:block;max-width:calc(var(--d) * .58);margin:4px auto 0;line-height:1.3;font-size:max(10px, calc(var(--d) * .036))}
-.reg-donut .donut-legend{gap:10px}
-.reg-donut .donut-legend div{font-size:13px}
-.reg-donut .donut-legend b{font-size:12px}
-/* จอ ≤1100px: สองคอลัมน์ซ้อนเป็นแถวเดียว ไม่มีความสูงให้อ้างอิง → กลับเป็นขนาดคงที่ */
-@media(max-width:1100px){
-  .two-col > .reg-donut{container-type:normal;min-height:0}
-  .reg-donut .donut-wrap{height:auto;gap:18px}
-  .reg-donut .donut{--d:180px}
-}
+.reg-donut .donut-legend{align-self:center;width:100%;max-width:380px;gap:10px}
+.reg-donut .donut-legend div{font-size:14px}
+.reg-donut .donut-legend b{font-size:13px}
+/* การ์ด Industry: เส้นบาง ๆ แบ่ง หมวดอุตสาหกรรม (TSIC) | S-Curve / BCG */
+.ind-cols > :last-child{align-self:stretch;border-left:1px solid var(--line);padding-left:20px}
+.ind-cols .sub-block + .sub-block{border-top:1px solid var(--line);padding-top:16px}
+@media(max-width:1100px){.ind-cols > :last-child{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:16px}}
 
 .c0{background:linear-gradient(90deg,#4fa9d6,#1b7da3)}
 .c1{background:linear-gradient(90deg,#a97fc9,#7d5a9e)}
@@ -1073,10 +1070,8 @@ body.light .pd-kbox{box-shadow:0 1px 2px rgba(16,24,40,.05)}
 .pd-kpart{min-width:0;padding:18px 20px;display:flex;flex-direction:column}
 .pd-kpart + .pd-kpart{border-left:1px solid var(--line)}
 .pd-kpart .kpi-title{margin-bottom:8px}
-.pd-kpart:not(.pd-kmain) .kpi-sub{margin-top:auto;padding-top:10px}
-.pd-big{font-size:32px;font-weight:700;line-height:1.1;letter-spacing:-.01em;color:var(--text)}
-.pd-chg{margin-top:6px;font-size:14px;font-weight:600;color:var(--muted)}
-.pd-chg span{font-size:12px;font-weight:400}
+/* กล่องสัดส่วน/อันดับ: ป้ายการเปลี่ยนแปลงกว้างเต็มช่อง ชิดซ้าย (กล่องหลักมีตัวเลขเทียบอยู่ทางซ้ายของป้าย) */
+.pd-kpart:not(.pd-kmain) .kpi-yoy-badge{flex:1;align-items:flex-start}
 @media(max-width:1100px){
   .pd-kbox{grid-template-columns:1fr 1fr}
   .pd-kmain{grid-column:1 / -1;border-bottom:1px solid var(--line)}
@@ -1462,6 +1457,18 @@ td.num{font-size:13px}
   .proj-hero{padding:20px}
 }
 @media(max-width:560px){.chart-section,.ov .chart-section{padding:14px}}
+
+/* ข้อความบรรทัดเดียวที่ตัดด้วย … (overflow:hidden) — กล่องตัดพอดีขอบตัวอักษร แต่หมึกของอักษรไทยใน Sarabun ยื่นเกินขอบตัวเอง:
+   หัวสระ ไ ใ โ (และ ภ) ยื่นไปทางซ้าย 1–2px · วรรณยุกต์บนสระบน เช่น "ต้" "ขึ้" ชิดขอบบน · การันต์ "ณ์" ยื่นไปทางขวา
+   → หัวสระ "ไ" ใน "ไม่ต้องการประสบการณ์" ถูกตัด (ชัดขึ้นเมื่อจอขยาย 125%) · ขยายพื้นที่ตัดออกทุกด้านด้วย padding
+   แล้วหักคืนด้วย margin ติดลบ → ตัวอักษรไม่ถูกตัด และตำแหน่ง/ความกว้างของข้อความเท่าเดิม */
+.nav-tab .en,.exp-pill-text,.tm-cell-name,.ms-lbl,.ms-name,.bar-label,.donut-legend .dn-name,.rank-name,.preset-item span,
+.sk-sub-name,.sk-row-name,.trend-name,.rg-name,.ri-name,.ri-sub,.hm-row-name,.hm-row-name small,.db-name{padding:.3em .25em;margin:-.3em -.25em}
+.nav-tab .th{padding:.3em .25em;margin:calc(1px - .3em) -.25em -.3em}
+.trend-sub{padding:.3em .25em;margin:calc(6px - .3em) -.25em -.3em}
+.db-sub .db-name{padding-left:calc(18px + .25em)}   /* วุฒิย่อย: ย่อหน้าเดิม 18px */
+.ri-sub{max-width:calc(130px + .5em)}                /* กล่อง border-box: บวก padding ซ้าย-ขวาคืน ให้ความกว้างข้อความเท่าเดิม */
+.nav-tab .en,.nav-tab .th{max-width:calc(100% + .5em)}
 
 </style>
 </head>
@@ -3226,7 +3233,7 @@ function dimSection(S, kind, E){
       legendHTML() + stackedBars(S.fos, S.n, 'field', 12, 250));
   }
   if(kind === 'industry'){
-    const body = `<div class="two-col"><div>${stackedBars(S.tsic, S.n, 'industry-tsic', 10, 250)}</div>
+    const body = `<div class="two-col ind-cols"><div>${sectionSub('หมวดอุตสาหกรรม (TSIC)', stackedBars(S.tsic, S.n, 'industry-tsic', 10, 175))}</div>
       <div>${sectionSub('S-Curve', simpleBars(S.scv.filter(x => !/^ไม่/.test(x.name)).slice(0, 8), S.n, 'c6', 'industry-scv', 8, 170))}
            ${sectionSub('BCG', simpleBars(S.bcg.filter(x => !/^ไม่/.test(x.name)).slice(0, 8), S.n, 'c2', 'industry-bcg', 8, 170))}</div></div>`;
     return sectionWrap('🏭 Industry · อุตสาหกรรมที่รับ', `TSIC ${S.tsic.length} หมวด · แถบสีแสดงสัดส่วนประสบการณ์ · คลิกเพื่อไปหน้า Industry`, legendHTML() + body);
@@ -3262,7 +3269,7 @@ function dimSection(S, kind, E){
     /* ต้องใช้ .distinct (จำนวนจริง) ไม่ใช่ .length ที่ถูกตัดเหลือ 30 อันดับแรกไว้วาดกราฟ */
     const nProv = S.prov.distinct || S.prov.length, nReg = S.reg.distinct || S.reg.length;
     return sectionWrap('📍 Region & Province · พื้นที่ทำงาน', `${nReg} ภูมิภาค · ${nProv} จังหวัดที่พบ${nProv > S.prov.length ? ` (แสดง ${S.prov.length} อันดับแรก)` : ''} · สัดส่วนจากประกาศทั้งหมดของรายการนี้`,
-      `<div class="two-col"><div>${sectionSub('จังหวัด (ไม่รวม “ไม่ระบุ”)', simpleBars(provs, S.n, 'c2', null, 12, 190))}</div><div class="reg-donut">${donut(S.reg, S.n)}</div></div>`);
+      `<div class="two-col"><div>${sectionSub('จังหวัด (ไม่รวม “ไม่ระบุ”)', simpleBars(provs, S.n, 'c2', null, 12, 190))}</div><div class="reg-donut">${sectionSub('ภูมิภาค', donut(S.reg, S.n))}</div></div>`);
   }
   if(kind === 'cooccur'){
     return sectionWrap('🔗 ทักษะที่มักพบร่วมกัน', 'ทักษะอื่นที่ปรากฏในประกาศเดียวกันบ่อยที่สุด · % = สัดส่วนของประกาศที่ต้องการทักษะนี้',
@@ -3657,6 +3664,8 @@ function periodKpiHTML(S, E, P, R){
   const dShare = shareC === null ? null : +(share - shareC).toFixed(2);
   const arrow = v => v > 0 ? '▲' : v < 0 ? '▼' : '■';
   const dR = R.rc === null ? null : R.rc - R.r;   // บวก = อันดับดีขึ้น (เลขน้อยลง)
+  /* ป้ายการเปลี่ยนแปลง (แบบเดียวกับกล่องจำนวนประกาศ) · v บวก = เขียว ลบ = แดง 0/ไม่มีคู่เทียบ = เทา */
+  const chgBadge = (v, big, small) => `<div class="kpi-yoy-badge${v > 0 ? ' up' : v < 0 ? ' down' : ''}"><b>${big}</b><small>${small}</small></div>`;
   return `<div class="pd-kbox">
     <div class="pd-kpart pd-kmain kpi-total">
       <div class="kpi-title">จำนวนประกาศทั้งหมด · ${esc(P.long)}</div>
@@ -3666,16 +3675,18 @@ function periodKpiHTML(S, E, P, R){
         <div class="kpi-yoy-nums"><span><b>${fmt(prev)}</b><i>${esc(P.cmpLabel)}</i></span><em>▶</em><span><b>${fmt(cur)}</b><i>${esc(P.label)}</i></span></div>
         <div class="kpi-yoy-badge ${y === null ? '' : up ? 'up' : 'down'}"><b>${y === null ? '—' : (up ? '▲ ' : '▼ ') + signed(y)}</b><small>${y === null ? `ไม่มีประกาศใน ${esc(P.cmpLabel)}` : `${dFmt(d)} ประกาศ · เทียบ ${esc(P.cmpLabel)}`}</small></div>
       </div></div>
-    <div class="pd-kpart">
+    <div class="pd-kpart kpi-total">
       <div class="kpi-title">สัดส่วนของตลาด</div>
-      <div class="pd-big">${share.toFixed(2)}%</div>
-      ${dShare === null ? '' : `<div class="pd-chg">${arrow(dShare)} ${Math.abs(dShare).toFixed(2)} pp <span>เทียบ ${esc(P.cmpLabel)} (${shareC.toFixed(2)}%)</span></div>`}
-      <div class="kpi-sub">ของประกาศทั้งหมดใน${esc(P.long)} (${fmt(mN)} ประกาศ)</div></div>
-    <div class="pd-kpart">
+      <div class="kpi-big">${share.toFixed(2)}%</div>
+      <div class="kpi-sub">ของประกาศทั้งหมดใน${esc(P.long)} (${fmt(mN)} ประกาศ)</div>
+      <div class="kpi-total-yoy">${chgBadge(dShare, dShare === null ? '—' : `${arrow(dShare)} ${Math.abs(dShare).toFixed(2)} pp`,
+        dShare === null ? `ไม่มีประกาศใน ${esc(P.cmpLabel)}` : `เทียบ ${esc(P.cmpLabel)} (${shareC.toFixed(2)}%)`)}</div></div>
+    <div class="pd-kpart kpi-total">
       <div class="kpi-title">อันดับใน${esc(E.label)}</div>
-      <div class="pd-big">#${fmt(R.r)}</div>
-      ${dR === null ? '' : `<div class="pd-chg">${dR === 0 ? '■ อันดับเท่าเดิม' : `${arrow(dR)} ${fmt(Math.abs(dR))} อันดับ`} <span>(เดิม #${fmt(R.rc)} ใน ${esc(P.cmpLabel)})</span></div>`}
-      <div class="kpi-sub">จาก ${fmt(R.n)} ${esc(E.label)} · เรียงตามจำนวนประกาศใน${esc(P.long)}${R.filtered ? ' (ก่อนกรอง)' : ''}</div></div>
+      <div class="kpi-big">#${fmt(R.r)}</div>
+      <div class="kpi-sub">จาก ${fmt(R.n)} ${esc(E.label)} · เรียงตามจำนวนประกาศใน${esc(P.long)}${R.filtered ? ' (ก่อนกรอง)' : ''}</div>
+      <div class="kpi-total-yoy">${chgBadge(dR, dR === null ? '—' : dR === 0 ? '■ เท่าเดิม' : `${arrow(dR)} ${fmt(Math.abs(dR))} อันดับ`,
+        dR === null ? `ไม่มีอันดับใน ${esc(P.cmpLabel)}` : `เดิม #${fmt(R.rc)} ใน ${esc(P.cmpLabel)}`)}</div></div>
   </div>`;
 }
 
